@@ -9,7 +9,8 @@ db.serialize(() => {
         name TEXT NOT NULL,
         score INTEGER DEFAULT 0,
         role TEXT DEFAULT "user",
-        password TEXT NOT NULL
+        password TEXT NOT NULL,
+        salt TEXT NOT NULL
     )`);
 
     db.run(`CREATE TABLE IF NOT EXISTS absences (
