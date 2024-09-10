@@ -32,10 +32,10 @@ exports.addUser = (name, role, password, score) => {
   });
 };
 
-exports.editScore = (name, score) => {
+exports.editScore = (userId, score) => {
   return new Promise((resolve, reject) => {
-    const sql = "UPDATE users SET score = ? WHERE name= ?";
-    db.run(sql, [score, name], function (err) {
+    const sql = "UPDATE users SET score = ? WHERE id= ?";
+    db.run(sql, [score, userId], function (err) {
       if (err) {
         reject(err);
       }
@@ -142,9 +142,6 @@ exports.generateShifts = (month, year) => {
     });
   });
 };
-
-
-
 
 exports.getUser = (name, password) => {
   return new Promise((resolve, reject) => {
