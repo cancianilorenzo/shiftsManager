@@ -1,0 +1,6 @@
+/* PersonDatePicker.css */
+.rbt-menu.dropdown-menu.show {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  
