@@ -2,6 +2,7 @@
 
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors");
 
 const dao = require("./dao");
 
@@ -9,9 +10,16 @@ const dao = require("./dao");
 const app = new express();
 const port = 3001;
 
+//Cors options
+const corsOptions = {
+  origin: "http://localhost:5173",
+  credentials: true,
+};
+
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors(corsOptions));
 
 // for (let i = 0; i < 100; i++) {
 //  dao.addUser('User '+i, 'user', 'password', 0);
@@ -55,7 +63,12 @@ app.get("/api/shifts", (req, res) => {
     .catch((err) => res.status(500).json(err));
 });
 
-
+app.get("/api/users", (req, res) => {
+  dao
+    .getUsers()
+    .then((response) => res.status(200).json(response))
+    .catch((err) => res.status(500).json(err));
+});
 
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
