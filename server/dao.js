@@ -4,6 +4,7 @@ const db = require("./db");
 const dayjs = require("dayjs");
 const utils = require("./utils");
 const crypto = require("crypto");
+const { use } = require("passport");
 
 const keyLength = 64;
 const costFactor = 16384;
@@ -39,6 +40,7 @@ exports.addUser = (name, role, password, score) => {
 exports.editScore = (userId, score) => {
   return new Promise((resolve, reject) => {
     const sql = "UPDATE users SET score = ? WHERE id= ?";
+    console.log('TO UPDATE ', userId, score);
     db.run(sql, [score, userId], function (err) {
       if (err) {
         reject(err);
@@ -182,7 +184,7 @@ exports.getUser = (name, password) => {
 
 exports.getUsers = () => {
   return new Promise((resolve, reject) => {
-    const sql = "SELECT id, name FROM users";
+    const sql = "SELECT id, name, score FROM users";
     db.all(sql, (err, row) => {
       if (err) {
         reject(err);

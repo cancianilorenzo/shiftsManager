@@ -7,6 +7,8 @@ import { Typeahead } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.css";
 import "./Manager.css";
 import API from "../API";
+import { Container, Row } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 const PersonDatePicker = (props) => {
   const persons = props.users;
@@ -16,10 +18,12 @@ const PersonDatePicker = (props) => {
   const [endDate, setEndDate] = useState(null);
   const [selectedDates, setSelectedDates] = useState([]);
 
+  const user = props.user;
+
   const handlePersonSelect = (selected) => {
     const person = selected[0];
     setSelectedPerson(person);
-    setSelectedDates([]); // Resetta le date selezionate quando si cambia utente
+    setSelectedDates([]);
   };
 
   const handleDateChange = (dates) => {
@@ -45,66 +49,85 @@ const PersonDatePicker = (props) => {
   };
 
   const submitDates = () => {
-    // API call to insert absences
     console.log("Submit dates ", selectedDates, "id", selectedPerson.id);
     API.insertAbsences(selectedPerson.id, selectedDates)
       .then(() => {
         console.log("Absences inserted");
+        setSelectedDates([]);
       })
       .catch((err) => console.error(err));
   };
 
   return (
     <div className="container mt-3">
-      <h3>Shifts manager</h3>
-      <Form>
-        <Form.Group controlId="personSelect">
-          <Form.Label>Select user</Form.Label>
-          <Typeahead
-            id="person-typeahead"
-            labelKey="name"
-            options={persons || []}
-            placeholder="Seleziona un utente..."
-            onChange={handlePersonSelect}
-            selected={selectedPerson ? [selectedPerson] : []}
-            highlightOnlyResult
-          />
-        </Form.Group>
+      <Container>
+        <Form>
+          <Row>
+            <Form.Group controlId="personSelect">
+              <Form.Label>Select user</Form.Label>
+              <Typeahead
+                id="person-typeahead"
+                labelKey="name"
+                options={persons || []}
+                placeholder="Select user..."
+                onChange={handlePersonSelect}
+                selected={selectedPerson ? [selectedPerson] : []}
+                highlightOnlyResult
+              />
+            </Form.Group>
+          </Row>
 
-        <Form.Group controlId="dateSelect" className="mt-3">
-          <Form.Label>Select day(s)</Form.Label>
-          <div className="d-flex">
-            <DatePicker
-              selected={startDate}
-              onChange={handleDateChange}
-              startDate={startDate}
-              endDate={endDate}
-              selectsRange
-              inline
-              className="form-control"
-              dateFormat="dd/MM/yyyy"
-            />
-          </div>
-        </Form.Group>
-        <p></p>
-        <Button variant="primary" className="ml-2" onClick={addDateRange}>
-          Aggiungi intervallo di date
+          <Form.Group controlId="dateSelect" className="mt-3">
+            <Form.Label>Select day(s)</Form.Label>
+            <div className="d-flex">
+              <DatePicker
+                selected={startDate}
+                onChange={handleDateChange}
+                startDate={startDate}
+                endDate={endDate}
+                selectsRange
+                inline
+                className="form-control"
+                dateFormat="dd/MM/yyyy"
+              />
+            </div>
+          </Form.Group>
+          <p></p>
+          <Button variant="primary" className="ml-2" onClick={addDateRange}>
+            Add date range
+          </Button>
+
+          {selectedDates.length > 0 && (
+            <div className="mt-3">
+              <h5>Selected day(s) for {selectedPerson?.name}</h5>
+              <ul>
+                {selectedDates.map((date, index) => (
+                  <li key={index}>{date}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </Form>
+      </Container>
+      {/* <Row> */}
+        <Button variant="primary" className="mt-3" onClick={submitDates}>
+          Submit
         </Button>
-
-        {selectedDates.length > 0 && (
-          <div className="mt-3">
-            <h5>Selected day(s) for {selectedPerson?.name}</h5>
-            <ul>
-              {selectedDates.map((date, index) => (
-                <li key={index}>{date}</li>
-              ))}
-            </ul>
-          </div>
+      {/* </Row> */}
+      <Row>
+        <p></p>
+        <p></p>
+        {user && user.role === 'admin' && (
+          <Button variant="danger" className="px-4 py-2">
+            <Link
+              to="/manage"
+              style={{ color: "white", textDecoration: "none" }}
+            >
+              Management
+            </Link>
+          </Button>
         )}
-      </Form>
-      <Button variant="primary" className="mt-3" onClick={submitDates}>
-        Submit
-      </Button>
+      </Row>
     </div>
   );
 };
