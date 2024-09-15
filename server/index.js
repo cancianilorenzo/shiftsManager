@@ -1,4 +1,6 @@
 "use strict";
+require('dotenv').config();
+
 
 const express = require("express");
 const morgan = require("morgan");
@@ -10,11 +12,10 @@ const dao = require("./dao");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 
+
 //Server
 const app = new express();
 const port = process.env.SERVER_PORT;
-
-require('dotenv').config();
 
 //Cors options
 const corsOptions = {
