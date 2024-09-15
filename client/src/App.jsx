@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import reactLogo from "./assets/react.svg";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import PersonDatePicker from "./components/Manager";
