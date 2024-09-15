@@ -12,11 +12,13 @@ const LocalStrategy = require("passport-local");
 
 //Server
 const app = new express();
-const port = 3001;
+const port = process.env.SERVER_PORT;
+
+require('dotenv').config();
 
 //Cors options
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: process.env.FRONTEND_URL,
   credentials: true,
 };
 
@@ -24,14 +26,6 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors(corsOptions));
-
-// for (let i = 0; i < 100; i++) {
-//  dao.addUser('User '+i, 'user', 'password', 0);
-// }
-
-// dao.addUser('000 User', 'user', 'password', 0);
-
-// dao.generateShifts(9, 2024);
 
 passport.use(
   new LocalStrategy(async function verify(username, password, callback) {
@@ -54,7 +48,7 @@ const session = require("express-session");
 
 app.use(
   session({
-    secret: "randomSecretChengedInProduction :)",
+    secret: process.env.SESSION_KEY,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -76,7 +70,7 @@ const isLoggedIn = (req, res, next) => {
 
 function generateMarkdownTable(jsonData) {
   // Inizializza la stringa della tabella con l'intestazione
-  let markdown = "| Data       | Utente 1   | Utente 2   | Utente 3   |\n";
+  let markdown = "| Data       |    |    |    |\n";
   markdown += "|------------|------------|------------|------------|\n";
 
   // Itera su ogni turno nel JSON
@@ -100,7 +94,7 @@ function generateMarkdownTable(jsonData) {
 
 //APIs
 
-app.post("/api/user", (req, res) => {
+app.post("/api/user", [isLoggedIn], (req, res) => {
   const { name, role, password, score } = req.body;
   dao
     .addUser(name, role, password, score)
@@ -116,7 +110,7 @@ app.post("/api/absences", (req, res) => {
     .catch((err) => res.status(500).json(err));
 });
 
-app.patch("/api/score", (req, res) => {
+app.patch("/api/score", [isLoggedIn], (req, res) => {
   const { userId, score } = req.body;
   dao
     .editScore(userId, score)
@@ -124,7 +118,7 @@ app.patch("/api/score", (req, res) => {
     .catch((err) => res.status(500).json(err));
 });
 
-app.get("/api/shifts", (req, res) => {
+app.get("/api/shifts", [isLoggedIn], (req, res) => {
   const { month, year } = req.query;
   dao
     .generateShifts(month, year)
@@ -177,7 +171,7 @@ app.delete("/api/sessions/current", (req, res) => {
 
 
 app.listen(port, () => {
-  console.log(`Server listening at http://localhost:${port}`);
+  console.log(`Server running`);
 });
 
 module.exports = app;
