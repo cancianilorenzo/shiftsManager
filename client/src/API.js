@@ -1,6 +1,6 @@
 "use strict";
 
-const SERVER_URL=import.meta.env.VITE_SERVER_URL;
+const SERVER_URL=import.meta.env.VITE_API_SERVER_URL;
 
 function getUsers() {
   return fetch(SERVER_URL + "users")

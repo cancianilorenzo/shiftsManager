@@ -5,6 +5,9 @@ require('dotenv').config();
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
+const compression = require("compression");
+const helmet = require("helmet");
+const RateLimit = require("express-rate-limit");
 
 const dao = require("./dao");
 
@@ -15,18 +18,26 @@ const LocalStrategy = require("passport-local");
 
 //Server
 const app = new express();
-const port = process.env.SERVER_PORT;
+const port = process.env.PORT || 3001;
 
 //Cors options
 const corsOptions = {
-  origin: process.env.FRONTEND_URL,
+  origin: process.env.ORIGIN || "http://localhost:5173",
   credentials: true,
 };
+
+const limiter = RateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 20,
+})
+
 
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors(corsOptions));
+app.use(compression());
+app.use(helmet());
 
 passport.use(
   new LocalStrategy(async function verify(username, password, callback) {
@@ -46,6 +57,7 @@ passport.deserializeUser(function (user, callback) {
 });
 
 const session = require("express-session");
+const MemoryStore = require('memorystore')(session)
 
 app.use(
   session({
@@ -53,11 +65,22 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
+      maxAge: 86400000,
       httpOnly: true,
-      secure: app.get("env") === "production" ? true : false,
+      secure: (process.env.NODE_ENV === "production" ? true : false),
     },
+    store: new MemoryStore({
+      checkPeriod: 86400000 // prune expired entries every 24h
+    }),
   })
 );
+
+
+app.use(session({
+
+  resave: false,
+  secret: 'keyboard cat'
+}))
 
 app.use(passport.authenticate("session"));
 
@@ -89,6 +112,10 @@ function generateMarkdownTable(jsonData) {
   });
 
   return markdown;
+}
+
+if(process.env.NODE_ENV === 'production'){
+  app.set('trust proxy', 1);
 }
 
 
