@@ -32,7 +32,6 @@ function LoginForm(props) {
         if (user) {
           setError("");
           loginSuccessful(user);
-          console.log(user)
           navigate("/");
         } else {
           setError("Wrong username or password!");

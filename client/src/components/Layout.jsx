@@ -34,7 +34,6 @@ function MyNavbar(props) {
                   variant="outline-primary"
                   onClick={() => {
                     API.logout().then(() => {
-                      console.log("logged out");
                       setUser(null);
                       <redirect to='/'  />
                     });

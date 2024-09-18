@@ -40,7 +40,6 @@ exports.addUser = (name, role, password, score) => {
 exports.editScore = (userId, score) => {
   return new Promise((resolve, reject) => {
     const sql = "UPDATE users SET score = ? WHERE id= ?";
-    console.log('TO UPDATE ', userId, score);
     db.run(sql, [score, userId], function (err) {
       if (err) {
         reject(err);
@@ -103,7 +102,6 @@ exports.generateShifts = (month, year) => {
 
       Promise.all(usersData)
         .then((usersComplete) => {
-          console.log(usersComplete);
           const monthlyShifts = utils.createMonthlyShifts(
             usersComplete,
             month,
@@ -133,15 +131,12 @@ exports.generateShifts = (month, year) => {
                 [shift.date, user.id, shiftType]
               );
               //Update user score
-              console.log("updating score");
               db.run(`UPDATE users SET score = ? WHERE id = ?`, [
                 user.score,
                 user.id,
               ]);
             });
           });
-          console.log("monthly shifts");
-          console.log(monthlyShifts);
           resolve(monthlyShifts);
         })
         .catch((err) => reject(err.message));

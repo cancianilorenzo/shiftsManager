@@ -18,8 +18,6 @@ function App() {
 
   const loginSuccesful = (user) => {
     setUser(user);
-    console.log("User ==> ", user);
-    console.log("User set correctly");
   };
 
   const logout = () => {

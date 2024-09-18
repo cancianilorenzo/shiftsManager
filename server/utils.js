@@ -4,7 +4,6 @@ const dayjs = require('dayjs');
 
 //Select people for shifts
  function userSelection (users, shift, day, date, existingShift){
-    console.log('inside userSelection')
     users.sort((a, b) => a.score - b.score);
 
     const choosen = [];
@@ -26,7 +25,6 @@ const dayjs = require('dayjs');
 
 // shiftCreator, where magic happens!
 exports.createMonthlyShifts = (users, month, year) => {
-    console.log('inside createMonthlyShifts')
     const weekDays = {
         domenica: 'Sunday',
         lunedi: 'Monday',
@@ -58,7 +56,6 @@ exports.createMonthlyShifts = (users, month, year) => {
             monthlyShifts.push({ date, shift: dailyShifts.map(p => p.name) });
         }
     }
-    console.log('exiting createMonthlyShifts')
     return monthlyShifts;
 }
 

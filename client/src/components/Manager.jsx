@@ -44,15 +44,11 @@ const PersonDatePicker = (props) => {
       );
       setSelectedDates([...selectedDates, ...uniqueDates]);
     }
-    console.log("Date result ", selectedDates);
-    console.log(selectedPerson);
   };
 
   const submitDates = () => {
-    console.log("Submit dates ", selectedDates, "id", selectedPerson.id);
     API.insertAbsences(selectedPerson.id, selectedDates)
       .then(() => {
-        console.log("Absences inserted");
         setSelectedDates([]);
       })
       .catch((err) => console.error(err));

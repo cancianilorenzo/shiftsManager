@@ -181,7 +181,6 @@ app.post("/api/sessions", function (req, res, next) {
     }
     req.login(user, (err) => {
       if (err) return next(err);
-      console.log(req.user)
       return res.status(200).json(req.user);
     });
   })(req, res, next);
