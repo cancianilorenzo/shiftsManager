@@ -191,8 +191,6 @@ app.delete("/api/sessions/current", (req, res) => {
   });
 });
 
-
-if(process.env.NODE_ENV === 'production'){
   https
   .createServer(
     {
@@ -206,11 +204,7 @@ if(process.env.NODE_ENV === 'production'){
      'Server running on port ', port
     );
   });
-}
-app.listen(port, function(err){
-  if (err) console.log("Error in server setup")
-  console.log("Server listening on Port", port);
-})
+
 
 
 module.exports = app;
