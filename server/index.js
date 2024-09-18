@@ -200,11 +200,6 @@ app.delete("/api/sessions/current", (req, res) => {
 });
 
 
-app.listen(port, () => {
-  console.log(`Server running`);
-});
-
-
 
 https
   .createServer(
