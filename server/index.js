@@ -8,6 +8,8 @@ const cors = require("cors");
 const compression = require("compression");
 const helmet = require("helmet");
 const RateLimit = require("express-rate-limit");
+const fs = require("fs");
+const https = require("https");
 
 const dao = require("./dao");
 
@@ -22,7 +24,7 @@ const port = process.env.PORT || 3001;
 
 //Cors options
 const corsOptions = {
-  origin: process.env.ORIGIN || "http://localhost:5173",
+  origin: [process.env.ORIGIN1, process.env.ORIGIN2] || "http://localhost:5173",
   credentials: true,
 };
 
@@ -201,5 +203,21 @@ app.delete("/api/sessions/current", (req, res) => {
 app.listen(port, () => {
   console.log(`Server running`);
 });
+
+
+
+https
+  .createServer(
+    {
+      key: fs.readFileSync(process.env.SSL_KEY),
+      cert: fs.readFileSync(process.env.SSL_CERTIFICATE),
+    },
+    app
+  )
+  .listen(port, function () {
+    console.log(
+     'Server running on port ', port
+    );
+  });
 
 module.exports = app;
