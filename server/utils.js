@@ -5,10 +5,15 @@ const dayjs = require('dayjs');
 //Select people for shifts
  function userSelection (users, shift, day, date, existingShift){
     users.sort((a, b) => a.score - b.score);
+    function convertDate(isoDate) {
+        const parts = isoDate.split('-');
+        const [year, month, day] = parts;
+        return `${day}/${month}/${year}`;
+      }
 
     const choosen = [];
     for (const user of users) {
-        if (!user.absences.includes(date) && !existingShift.includes(user.id) && choosen.length < shift) {
+        if (!user.absences.includes(convertDate(date)) && !existingShift.includes(user.id) && choosen.length < shift) {
             choosen.push(user);
         }
     }

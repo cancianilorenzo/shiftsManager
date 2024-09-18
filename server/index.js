@@ -77,13 +77,6 @@ app.use(
   })
 );
 
-
-app.use(session({
-
-  resave: false,
-  secret: 'keyboard cat'
-}))
-
 app.use(passport.authenticate("session"));
 
 const isLoggedIn = (req, res, next) => {
@@ -199,8 +192,8 @@ app.delete("/api/sessions/current", (req, res) => {
 });
 
 
-
-https
+if(process.env.NODE_ENV === 'production'){
+  https
   .createServer(
     {
       key: fs.readFileSync(process.env.SSL_KEY),
@@ -213,5 +206,11 @@ https
      'Server running on port ', port
     );
   });
+}
+app.listen(port, function(err){
+  if (err) console.log("Error in server setup")
+  console.log("Server listening on Port", port);
+})
+
 
 module.exports = app;
