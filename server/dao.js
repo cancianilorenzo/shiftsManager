@@ -179,7 +179,7 @@ exports.getUser = (name, password) => {
 
 exports.getUsers = () => {
   return new Promise((resolve, reject) => {
-    const sql = "SELECT id, name, score FROM users";
+    const sql = "SELECT id, name, score FROM users ORDER BY name";
     db.all(sql, (err, row) => {
       if (err) {
         reject(err);
