@@ -15,6 +15,7 @@ function App() {
   const [users, setUsers] = useState(null);
   const [user, setUser] = useState(null);
   const [dirty, setDirty] = useState(false);
+  const [absences, setAbsences] = useState([]);
 
   const loginSuccesful = (user) => {
     setUser(user);
@@ -29,6 +30,9 @@ function App() {
     API.getUsers()
       .then((users) => setUsers(users))
       .catch((err) => console.error(err));
+    API.getAbsences()
+      .then((absences) => setAbsences(absences))
+      .catch((err) => console.log(err));
   }, [dirty]);
 
   //UseEffect for checking authN
@@ -49,8 +53,11 @@ function App() {
       <LoginContext.Provider value={{ user, setUser }}>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Layout setUser={setUser}/>}>
-              <Route index element={<PersonDatePicker users={users} user={user} />} />
+            <Route path="/" element={<Layout setUser={setUser} />}>
+              <Route
+                index
+                element={<PersonDatePicker users={users} user={user} absences={absences} setDirty={setDirty} dirty={dirty}/>}
+              />
               <Route
                 path="/login"
                 element={
@@ -58,7 +65,10 @@ function App() {
                 }
               />
               {user && user.role === "admin" && (
-                <Route path="/manage" element={<AdminRoute users={users} setDirty={setDirty} />} />
+                <Route
+                  path="/manage"
+                  element={<AdminRoute users={users} setDirty={setDirty} />}
+                />
               )}
               <Route path="/*" element={<DefaultRoute />} />
             </Route>

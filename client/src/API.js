@@ -12,6 +12,17 @@ function getUsers() {
     });
 }
 
+
+function getAbsences() {
+  return fetch(SERVER_URL + "absences")
+    .then((absences) => {
+      return absences.json();
+    })
+    .catch((error) => {
+      throw error;
+    });
+}
+
 function insertAbsences(id, absences) {
   return fetch(SERVER_URL + "absences/", {
     method: "POST",
@@ -161,5 +172,5 @@ function getInfo() {
     });
 }
 
-const API = { getUsers, insertAbsences, generateShifts, login, logout, getInfo, patchScore, addUser, SERVER_URL };
+const API = { getUsers, insertAbsences, generateShifts, login, logout, getInfo, patchScore, addUser, getAbsences, SERVER_URL };
 export default API;

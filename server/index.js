@@ -1,6 +1,5 @@
 "use strict";
-require('dotenv').config();
-
+require("dotenv").config();
 
 const express = require("express");
 const morgan = require("morgan");
@@ -17,7 +16,6 @@ const dao = require("./dao");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 
-
 //Server
 const app = new express();
 const port = process.env.PORT || 3001;
@@ -31,8 +29,7 @@ const corsOptions = {
 const limiter = RateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
   max: 20,
-})
-
+});
 
 app.use(morgan("dev"));
 app.use(express.json());
@@ -59,7 +56,7 @@ passport.deserializeUser(function (user, callback) {
 });
 
 const session = require("express-session");
-const MemoryStore = require('memorystore')(session)
+const MemoryStore = require("memorystore")(session);
 
 app.use(
   session({
@@ -69,10 +66,10 @@ app.use(
     cookie: {
       maxAge: 86400000,
       httpOnly: true,
-      secure: (process.env.NODE_ENV === "production" ? true : false),
+      secure: process.env.NODE_ENV === "production" ? true : false,
     },
     store: new MemoryStore({
-      checkPeriod: 86400000 // prune expired entries every 24h
+      checkPeriod: 86400000, // prune expired entries every 24h
     }),
   })
 );
@@ -86,34 +83,31 @@ const isLoggedIn = (req, res, next) => {
   return res.status(401).json({ error: "Not authenticated" });
 };
 
-
 function generateMarkdownTable(jsonData) {
   // Inizializza la stringa della tabella con l'intestazione
   let markdown = "| Data       |    |    |    |\n";
   markdown += "|------------|------------|------------|------------|\n";
 
   // Itera su ogni turno nel JSON
-  jsonData.forEach(item => {
-      const date = item.date; // Ottieni la data
-      const shift = item.shift; // Ottieni gli utenti del turno
+  jsonData.forEach((item) => {
+    const date = item.date; // Ottieni la data
+    const shift = item.shift; // Ottieni gli utenti del turno
 
-      // Gestisci il caso di meno di 3 utenti aggiungendo celle vuote
-      const user1 = shift[0] || "";
-      const user2 = shift[1] || "";
-      const user3 = shift[2] || "";
+    // Gestisci il caso di meno di 3 utenti aggiungendo celle vuote
+    const user1 = shift[0] || "";
+    const user2 = shift[1] || "";
+    const user3 = shift[2] || "";
 
-      // Aggiungi una riga alla tabella Markdown
-      markdown += `| ${date} | ${user1} | ${user2} | ${user3} |\n`;
+    // Aggiungi una riga alla tabella Markdown
+    markdown += `| ${date} | ${user1} | ${user2} | ${user3} |\n`;
   });
 
   return markdown;
 }
 
-if(process.env.NODE_ENV === 'production'){
-  app.set('trust proxy', 1);
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
 }
-
-
 
 //APIs
 
@@ -129,6 +123,13 @@ app.post("/api/absences", (req, res) => {
   const { userId, absences } = req.body;
   dao
     .addAbsences(userId, absences)
+    .then((response) => res.status(200).json(response))
+    .catch((err) => res.status(500).json(err));
+});
+
+app.get("/api/absences", (req, res) => {
+  dao
+    .getAbsences()
     .then((response) => res.status(200).json(response))
     .catch((err) => res.status(500).json(err));
 });
@@ -165,7 +166,6 @@ app.get("/api/users", (req, res) => {
     .catch((err) => res.status(500).json(err));
 });
 
-
 app.post("/api/sessions", function (req, res, next) {
   passport.authenticate("local", (err, user, info) => {
     if (err) return next(err);
@@ -191,20 +191,22 @@ app.delete("/api/sessions/current", (req, res) => {
   });
 });
 
+if (process.env.MODE === "production") {
   https
-  .createServer(
-    {
-      key: fs.readFileSync(process.env.SSL_KEY),
-      cert: fs.readFileSync(process.env.SSL_CERTIFICATE),
-    },
-    app
-  )
-  .listen(port, function () {
-    console.log(
-     'Server running on port ', port
-    );
+    .createServer(
+      {
+        key: fs.readFileSync(process.env.SSL_KEY),
+        cert: fs.readFileSync(process.env.SSL_CERTIFICATE),
+      },
+      app
+    )
+    .listen(port, function () {
+      console.log("Server running on port ", port);
+    });
+} else {
+  app.listen(port, () => {
+    console.log("Server listening on port ", port);
   });
-
-
+}
 
 module.exports = app;

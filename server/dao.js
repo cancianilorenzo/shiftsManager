@@ -4,7 +4,6 @@ const db = require("./db");
 const dayjs = require("dayjs");
 const utils = require("./utils");
 const crypto = require("crypto");
-const { use } = require("passport");
 
 const keyLength = 64;
 const costFactor = 16384;
@@ -183,7 +182,20 @@ exports.getUsers = () => {
     db.all(sql, (err, row) => {
       if (err) {
         reject(err);
-      } else{
+      } else {
+        resolve(row);
+      }
+    });
+  });
+};
+
+exports.getAbsences = () => {
+  return new Promise((resolve, reject) => {
+    const sql = "SELECT * FROM absences";
+    db.all(sql, (err, row) => {
+      if (err) {
+        reject(err);
+      } else {
         resolve(row);
       }
     });

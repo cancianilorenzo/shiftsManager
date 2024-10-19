@@ -200,7 +200,7 @@ function AdminRoute(props) {
                 <Form.Label>Current Score</Form.Label>
                 <Form.Control
                   readOnly
-                  value={selectedUser?.score || "No score available"}
+                  value={selectedUser?.score}
                 />
               </Form.Group>
             </Col>

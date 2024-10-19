@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Button } from "react-bootstrap";
+import { Form, Button, Modal } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format, eachDayOfInterval } from "date-fns";
@@ -12,6 +12,9 @@ import { Link } from "react-router-dom";
 
 const PersonDatePicker = (props) => {
   const persons = props.users;
+  const setDirty = props.setDirty;
+  const absences = props.absences;
+  const dirty = props.dirty;
 
   const [selectedPerson, setSelectedPerson] = useState(null);
   const [startDate, setStartDate] = useState(null);
@@ -19,6 +22,11 @@ const PersonDatePicker = (props) => {
   const [selectedDates, setSelectedDates] = useState([]);
 
   const user = props.user;
+
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   const handlePersonSelect = (selected) => {
     const person = selected[0];
@@ -50,8 +58,15 @@ const PersonDatePicker = (props) => {
     API.insertAbsences(selectedPerson.id, selectedDates)
       .then(() => {
         setSelectedDates([]);
+        setDirty(!dirty);
       })
       .catch((err) => console.error(err));
+  };
+
+  //not correctly filtering, empty array after filtering, problem with the userid??
+  const filterAbsences = (userId) => {
+    let result = absences.filter((obj) => obj.user === userId.id);
+    return result;
   };
 
   return (
@@ -107,14 +122,33 @@ const PersonDatePicker = (props) => {
         </Form>
       </Container>
       {/* <Row> */}
-        <Button variant="primary" className="mt-3" onClick={submitDates}>
-          Submit
-        </Button>
+      <Button variant="primary" className="mt-3" onClick={submitDates}>
+        Submit new day(s)
+      </Button>
       {/* </Row> */}
+      <p></p>
+      <Row>
+        {/* Should become a button with a modal */}
+        {selectedPerson && filterAbsences(selectedPerson) != null && (
+          <Button variant="warning" onClick={handleShow}>
+            Show already inserted day(s)
+          </Button>
+        )}
+
+        {/* WORKING */}
+        {/* {selectedPerson && filterAbsences(selectedPerson) != null && (
+                        <ul>
+                          <p>Days stored</p>
+                        {filterAbsences(selectedPerson).map((date, index) => (
+                          <li key={index}>{date.date}</li>
+                        ))}
+                      </ul>
+        )} */}
+      </Row>
       <Row>
         <p></p>
         <p></p>
-        {user && user.role === 'admin' && (
+        {user && user.role === "admin" && (
           <Button variant="danger" className="px-4 py-2">
             <Link
               to="/manage"
@@ -125,6 +159,31 @@ const PersonDatePicker = (props) => {
           </Button>
         )}
       </Row>
+
+      {selectedPerson && (
+        <Modal show={show} onHide={handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>Already registered day(s)</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {" "}
+            <ul>
+              <p>Days stored</p>
+              {/* <p>{selectedPerson.id}</p> */}
+              <center>
+                {filterAbsences(selectedPerson).map((date, index) => (
+                  <li key={index}>{date.date}</li>
+                ))}
+              </center>
+            </ul>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      )}
     </div>
   );
 };
