@@ -1,4 +1,17 @@
-steps:
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
